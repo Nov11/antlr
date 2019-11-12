@@ -16,57 +16,57 @@
 
     <build>
         <plugins>
-<!--            <plugin>-->
-<!--                <groupId>org.antlr</groupId>-->
-<!--                <artifactId>antlr4-maven-plugin</artifactId>-->
-<!--                <version>4.7.2</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>antlr</id>-->
-<!--                        <goals>-->
-<!--                            <goal>antlr4</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
-<!--            <plugin>-->
-<!--                <groupId>com.googlecode.maven-download-plugin</groupId>-->
-<!--                <artifactId>download-maven-plugin</artifactId>-->
-<!--                <version>1.4.0</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <phase>generate-sources</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>wget</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <url>https://raw.githubusercontent.com/antlr/grammars-v4/master/protobuf3/Protobuf3.g4</url>-->
-<!--                            <outputFileName>Protobuf3.g4</outputFileName>-->
-<!--                            <outputDirectory>src/main/antlr4/com/khubla/antlr4example/</outputDirectory>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
             <plugin>
-                <groupId>com.github.os72</groupId>
-                <artifactId>protoc-jar-maven-plugin</artifactId>
-                <version>3.8.0</version>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <version>4.7.2</version>
+                <executions>
+                    <execution>
+                        <id>antlr</id>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <version>1.4.0</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>
                         <goals>
-                            <goal>run</goal>
+                            <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <addProtoSources>all</addProtoSources>
-                            <includeMavenTypes>direct</includeMavenTypes>
-                            <inputDirectories>
-                                <include>src/main/protobuf</include>
-                            </inputDirectories>
+                            <url>https://raw.githubusercontent.com/antlr/grammars-v4/master/protobuf3/Protobuf3.g4</url>
+                            <outputFileName>Protobuf3.g4</outputFileName>
+                            <outputDirectory>src/main/antlr4/com/khubla/antlr4example/</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+<!--            <plugin>-->
+<!--                <groupId>com.github.os72</groupId>-->
+<!--                <artifactId>protoc-jar-maven-plugin</artifactId>-->
+<!--                <version>3.8.0</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>generate-sources</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>run</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <addProtoSources>all</addProtoSources>-->
+<!--                            <includeMavenTypes>direct</includeMavenTypes>-->
+<!--                            <inputDirectories>-->
+<!--                                <include>src/main/protobuf</include>-->
+<!--                            </inputDirectories>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 
