@@ -17,3 +17,11 @@ message HelloRequest {
 message HelloReply {
     string message = 1;
 }
+
+
+message Inner {
+    int32 i32 = 1;
+}
+message Outer {
+    Inner inner = 1;
+}
