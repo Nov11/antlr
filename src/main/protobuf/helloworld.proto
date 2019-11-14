@@ -33,10 +33,38 @@ message HelloReply {
     string message = 1;
 }
 
+enum Corpus {
+    UNIVERSAL = 0;
+    WEB = 1;
+    IMAGES = 2;
+    LOCAL = 3;
+    NEWS = 4;
+    PRODUCTS = 5;
+    VIDEO = 6;
+}
+
+message Item {
+    int32 id = 1;
+    string name = 2;
+    Corpus corpus = 3;
+    oneof uuu {
+        string s = 4;
+        bool b = 5;
+    }
+    map<string, HelloReply> map = 6;
+}
 
 message Inner {
     int32 i32 = 1;
+    repeated Item itemList = 2;
 }
 message Outer {
+    Middle middle = 1;
+}
+message Middle {
     Inner inner = 1;
+}
+
+message Re {
+    repeated Re reList = 1;
 }
