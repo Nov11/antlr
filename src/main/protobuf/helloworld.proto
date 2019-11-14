@@ -5,12 +5,27 @@ package helloworld;
 // The greeter service definition.
 service Greeter {
     // Sends a greeting
-    rpc SayHello (HelloRequest) returns (HelloReply) {}
+    rpc SayHello (HelloRequest) returns (HelloReply) {
+    }
 }
 
 // The request message containing the user's name.
 message HelloRequest {
-    string name = 1;
+    string s = 1;
+    double d = 2;
+    float f = 3;
+    int32 i32 = 4;
+    int64 i64 = 5;
+    uint32 u32 = 6;
+    uint64 u64 = 7;
+    sint32 s32 = 8;
+    sint64 s64 = 9;
+    fixed32 f32 = 10;
+    fixed64 f64 = 11;
+    sfixed64 sf64 = 12;
+    sfixed32 sf32 = 13;
+    bool b = 14;
+    bytes bytes = 15;
 }
 
 // The response message containing the greetings
