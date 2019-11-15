@@ -19,8 +19,8 @@ public class Drive2 {
                 .setCorpus(Helloworld.Corpus.IMAGES)
                 .setId(1)
                 .setName("name1")
-                .putMap("r1", Helloworld.HelloReply.newBuilder().setMessage("msg11").build())
-                .putMap("r2", Helloworld.HelloReply.newBuilder().setMessage("msg12").build())
+                .putMap1("r1", Helloworld.HelloReply.newBuilder().setMessage("msg11").build())
+                .putMap1("r2", Helloworld.HelloReply.newBuilder().setMessage("msg12").build())
                 .putMap2("r1map2", 12)
                 .putMap3("r1map3", Helloworld.Corpus.IMAGES)
                 .addCorpusList(Helloworld.Corpus.IMAGES)
@@ -33,8 +33,8 @@ public class Drive2 {
                 .setCorpus(Helloworld.Corpus.IMAGES)
                 .setId(1)
                 .setName("name1")
-                .putMap("r2", Helloworld.HelloReply.newBuilder().setMessage("msg2").build())
-                .putMap("r22", Helloworld.HelloReply.newBuilder().setMessage("msg22").build())
+                .putMap1("r2", Helloworld.HelloReply.newBuilder().setMessage("msg2").build())
+                .putMap1("r22", Helloworld.HelloReply.newBuilder().setMessage("msg22").build())
                 .putMap2("r2map2", 22)
                 .putMap3("r3map3", Helloworld.Corpus.LOCAL)
                 .addCorpusList(Helloworld.Corpus.IMAGES)
@@ -51,7 +51,7 @@ public class Drive2 {
         Helloworld.Middle middle = Helloworld.Middle.newBuilder().setInner(inner).build();
         Helloworld.Outer outer = Helloworld.Outer.newBuilder().setMiddle(middle).build();
         System.out.println(outer);
-        walk33(outer, "");
+        walk33(outer, "outer");
 
 //        show(outer.getAllFields());
 
@@ -209,19 +209,13 @@ public class Drive2 {
      * if any container has been encountered, it show the container's name as well.
      *
      * @param root
-     * @param parent
+     * @param prefix
      */
-    private static void walk33(GeneratedMessageV3 root, String parent) {
+    private static void walk33(GeneratedMessageV3 root, String prefix) {
         if (root == null) {
             return;
         }
         //extract current wrapper class's name, and concatenate it with parent path
-        String fullName = root.getDescriptorForType().getFullName();
-        int comma = fullName.lastIndexOf('.');
-        String prefix = fullName;
-        if (comma != -1) {
-            prefix = (StringUtils.isEmpty(parent) ? "" : parent + ".") + fullName.substring(comma + 1);
-        }
 
         //transverse all the fields of current object
         //recursively going inside sub objects if it is not a protobuf3 message type
@@ -232,7 +226,6 @@ public class Drive2 {
             String fieldName = fieldDescriptor.getName();
             Descriptors.FieldDescriptor.Type type = fieldDescriptor.getType();
             if (type != Descriptors.FieldDescriptor.Type.MESSAGE) {
-                //todo:replace this with a callback
                 logger.info("{} value : {}", fieldStatsName(prefix, fieldName), entry.getValue());
                 continue;
             }
@@ -270,7 +263,6 @@ public class Drive2 {
                     }
 
                     //map<x, primitive type>
-                    //todo: invoke callback
                     logger.info("{} size : {}", fieldStatsName(prefix, fieldName), list.size());
                     continue;
                 }
@@ -293,7 +285,7 @@ public class Drive2 {
             //this field is a single protobuf3 message type
             if (value instanceof GeneratedMessageV3) {
                 GeneratedMessageV3 msg = (GeneratedMessageV3) value;
-                walk33(msg, prefix);
+                walk33(msg, fieldStatsName(prefix, fieldName));
             }
         }
     }

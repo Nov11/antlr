@@ -25,7 +25,7 @@ message HelloRequest {
     sfixed64 sf64 = 12;
     sfixed32 sf32 = 13;
     bool b = 14;
-    bytes bytes = 15;
+    bytes ba = 15;
 }
 
 // The response message containing the greetings
@@ -51,7 +51,7 @@ message Item {
         string s = 4;
         bool b = 5;
     }
-    map<string, HelloReply> map = 6;
+    map<string, HelloReply> map1 = 6;
     map<string, int32> map2 = 7;
     repeated Corpus corpusList = 8;
     map<string, Corpus> map3 = 9;
