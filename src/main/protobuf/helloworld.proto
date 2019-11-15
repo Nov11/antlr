@@ -52,6 +52,9 @@ message Item {
         bool b = 5;
     }
     map<string, HelloReply> map = 6;
+    map<string, int32> map2 = 7;
+    repeated Corpus corpusList = 8;
+    map<string, Corpus> map3 = 9;
 }
 
 message Inner {

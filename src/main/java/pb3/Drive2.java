@@ -19,7 +19,10 @@ public class Drive2 {
                 .setCorpus(Helloworld.Corpus.IMAGES)
                 .setId(1)
                 .setName("name1")
-                .putMap("r1", Helloworld.HelloReply.newBuilder().setMessage("msg").build())
+                .putMap("r1", Helloworld.HelloReply.newBuilder().setMessage("msg11").build())
+                .putMap("r2", Helloworld.HelloReply.newBuilder().setMessage("msg12").build())
+                .putMap2("r1map2", 12)
+                .putMap3("r1map3", Helloworld.Corpus.IMAGES)
                 .build();
 
         Helloworld.Item item2 = Helloworld.Item.newBuilder()
@@ -27,7 +30,10 @@ public class Drive2 {
                 .setCorpus(Helloworld.Corpus.IMAGES)
                 .setId(1)
                 .setName("name1")
-                .putMap("r1", Helloworld.HelloReply.newBuilder().setMessage("msg").build())
+                .putMap("r2", Helloworld.HelloReply.newBuilder().setMessage("msg2").build())
+                .putMap("r22", Helloworld.HelloReply.newBuilder().setMessage("msg22").build())
+                .putMap2("r2map2", 22)
+                .putMap3("r3map3", Helloworld.Corpus.LOCAL)
                 .build();
 
         Helloworld.Inner inner = Helloworld.Inner.newBuilder()
@@ -39,7 +45,8 @@ public class Drive2 {
         Helloworld.Middle middle = Helloworld.Middle.newBuilder().setInner(inner).build();
         Helloworld.Outer outer = Helloworld.Outer.newBuilder().setMiddle(middle).build();
         System.out.println(outer);
-        walk33(outer);
+        walk33(outer, "");
+
 //        show(outer.getAllFields());
 
         System.out.println("---");
@@ -187,17 +194,25 @@ public class Drive2 {
 //        }
 //    }
 
-    private static void walk33(GeneratedMessageV3 root) {
+    private static void walk33(GeneratedMessageV3 root, String parent) {
         if (root == null) {
             return;
         }
         Map<Descriptors.FieldDescriptor, Object> map = root.getAllFields();
+        String fullName = root.getDescriptorForType().getFullName();
+        int comma = fullName.lastIndexOf('.');
+        String prefix = fullName;
+        if (comma != -1) {
+            prefix = fullName.substring(comma + 1);
+            prefix = StringUtils.isEmpty(parent) ? prefix : (parent + "." + prefix);
+        }
 
         for (Map.Entry<Descriptors.FieldDescriptor, Object> entry : map.entrySet()) {
+            Descriptors.FieldDescriptor fieldDescriptor = entry.getKey();
+            String fieldName = fieldDescriptor.getName();
             Descriptors.FieldDescriptor.Type type = entry.getKey().getType();
-//            logger.info("{} - type : {}", entry.getKey().getFullName(), type);
             if (type != Descriptors.FieldDescriptor.Type.MESSAGE) {
-                logger.info("field : {} value : {}", entry.getKey().getFullName(), entry.getValue());
+                logger.info("{}.{} value : {}", prefix, fieldName, entry.getValue());
                 continue;
             }
 
@@ -205,6 +220,7 @@ public class Drive2 {
             if (value instanceof List) {
                 List list = (List) value;
                 if (list.isEmpty()) {
+                    //should not get here?
                     System.out.println("empty list");
                     continue;
                 }
@@ -218,27 +234,30 @@ public class Drive2 {
                         for (Object o : list) {
                             MapEntry inner = (MapEntry) o;
                             logger.info("key : {}", inner.getKey());
-                            walk33((GeneratedMessageV3) inner.getValue());
+                            walk33((GeneratedMessageV3) inner.getValue(), prefix);
                         }
+                        continue;
                     }
+                    //map<x, primitive type>
+                    logger.info("{}.{} size : {}", prefix, fieldName, list.size());
                     continue;
                 }
 
                 //ordinary protobuf3 object
                 if (first instanceof GeneratedMessageV3) {
                     for (Object o : list) {
-                        walk33((GeneratedMessageV3) o);
+                        walk33((GeneratedMessageV3) o, prefix);
                     }
                     continue;
                 }
                 //primitive type
-                logger.info("list of {} size : {}", first.getClass(), list.size());
+                logger.info("{}.{} size : {}", prefix, fieldName, list.size());
                 continue;
             }
 
             if (value instanceof GeneratedMessageV3) {
                 GeneratedMessageV3 msg = (GeneratedMessageV3) value;
-                walk33(msg);
+                walk33(msg, prefix);
             }
         }
     }
