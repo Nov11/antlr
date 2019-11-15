@@ -23,6 +23,9 @@ public class Drive2 {
                 .putMap("r2", Helloworld.HelloReply.newBuilder().setMessage("msg12").build())
                 .putMap2("r1map2", 12)
                 .putMap3("r1map3", Helloworld.Corpus.IMAGES)
+                .addCorpusList(Helloworld.Corpus.IMAGES)
+                .addCorpusList(Helloworld.Corpus.LOCAL)
+                .addCorpusList(Helloworld.Corpus.NEWS)
                 .build();
 
         Helloworld.Item item2 = Helloworld.Item.newBuilder()
@@ -34,6 +37,9 @@ public class Drive2 {
                 .putMap("r22", Helloworld.HelloReply.newBuilder().setMessage("msg22").build())
                 .putMap2("r2map2", 22)
                 .putMap3("r3map3", Helloworld.Corpus.LOCAL)
+                .addCorpusList(Helloworld.Corpus.IMAGES)
+                .addCorpusList(Helloworld.Corpus.LOCAL)
+                .addCorpusList(Helloworld.Corpus.NEWS)
                 .build();
 
         Helloworld.Inner inner = Helloworld.Inner.newBuilder()
@@ -194,28 +200,44 @@ public class Drive2 {
 //        }
 //    }
 
+    /**
+     * root is a message wrapper.
+     * it's not of primitive types.
+     * so its 'name' is needed so that the path to specific field can be shown.
+     * <p>
+     * parent is the path name that contains every parent message type.
+     * if any container has been encountered, it show the container's name as well.
+     *
+     * @param root
+     * @param parent
+     */
     private static void walk33(GeneratedMessageV3 root, String parent) {
         if (root == null) {
             return;
         }
-        Map<Descriptors.FieldDescriptor, Object> map = root.getAllFields();
+        //extract current wrapper class's name, and concatenate it with parent path
         String fullName = root.getDescriptorForType().getFullName();
         int comma = fullName.lastIndexOf('.');
         String prefix = fullName;
         if (comma != -1) {
-            prefix = fullName.substring(comma + 1);
-            prefix = StringUtils.isEmpty(parent) ? prefix : (parent + "." + prefix);
+            prefix = (StringUtils.isEmpty(parent) ? "" : parent + ".") + fullName.substring(comma + 1);
         }
 
+        //transverse all the fields of current object
+        //recursively going inside sub objects if it is not a protobuf3 message type
+        //otherwise invoke related callbacks
+        Map<Descriptors.FieldDescriptor, Object> map = root.getAllFields();
         for (Map.Entry<Descriptors.FieldDescriptor, Object> entry : map.entrySet()) {
             Descriptors.FieldDescriptor fieldDescriptor = entry.getKey();
             String fieldName = fieldDescriptor.getName();
-            Descriptors.FieldDescriptor.Type type = entry.getKey().getType();
+            Descriptors.FieldDescriptor.Type type = fieldDescriptor.getType();
             if (type != Descriptors.FieldDescriptor.Type.MESSAGE) {
-                logger.info("{}.{} value : {}", prefix, fieldName, entry.getValue());
+                //todo:replace this with a callback
+                logger.info("{} value : {}", fieldStatsName(prefix, fieldName), entry.getValue());
                 continue;
             }
 
+            //if this is a list (map in protobuf is represented with a list of MapEntries)
             Object value = entry.getValue();
             if (value instanceof List) {
                 List list = (List) value;
@@ -226,39 +248,66 @@ public class Drive2 {
                 }
 
                 Object first = list.get(0);
+                //check if this is actually a map
+                //i.e. map<xx, xx>
                 if (first instanceof MapEntry) {
-                    //this is a map
                     MapEntry e = (MapEntry) first;
+                    logger.info("{} size : {}", fieldName, list.size());
                     //map<x, GeneratedMessageV3>
                     if (e.getValue() instanceof GeneratedMessageV3) {
+
                         for (Object o : list) {
                             MapEntry inner = (MapEntry) o;
-                            logger.info("key : {}", inner.getKey());
-                            walk33((GeneratedMessageV3) inner.getValue(), prefix);
+                            //key is always of primitive types
+//                            logger.info("{} : {}", inner.getKey());
+
+                            walk33((GeneratedMessageV3) inner.getValue(),
+//                                    mapValueStatsName(prefix, fieldName, inner.getKey())
+                                    fieldStatsName(prefix, fieldName)
+                            );
                         }
                         continue;
                     }
+
                     //map<x, primitive type>
-                    logger.info("{}.{} size : {}", prefix, fieldName, list.size());
+                    //todo: invoke callback
+                    logger.info("{} size : {}", fieldStatsName(prefix, fieldName), list.size());
                     continue;
                 }
 
                 //ordinary protobuf3 object
+                //i.e. list<GeneratedMessageV3>
                 if (first instanceof GeneratedMessageV3) {
                     for (Object o : list) {
-                        walk33((GeneratedMessageV3) o, prefix);
+                        walk33((GeneratedMessageV3) o, fieldStatsName(prefix, fieldName));
                     }
                     continue;
                 }
+
                 //primitive type
-                logger.info("{}.{} size : {}", prefix, fieldName, list.size());
+                //i.e. list<primitive types>
+                logger.info("{} size : {}", fieldStatsName(prefix, fieldName), list.size());
                 continue;
             }
 
+            //this field is a single protobuf3 message type
             if (value instanceof GeneratedMessageV3) {
                 GeneratedMessageV3 msg = (GeneratedMessageV3) value;
                 walk33(msg, prefix);
             }
         }
+    }
+
+    private static String fieldStatsName(String prefix, String fieldName) {
+        return prefix + "." + fieldName;
+    }
+
+    private static String mapValueStatsName(String prefix, String fieldName, Object key) {
+        return prefix + "." + fieldName + "." + key;
+    }
+
+    //string of relative path is enough
+    static class Context {
+        public String path;
     }
 }
