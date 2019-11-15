@@ -17,23 +17,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.antlr</groupId>
-                <artifactId>antlr4-maven-plugin</artifactId>
-                <version>4.7.2</version>
-                <executions>
-                    <execution>
-                        <id>antlr</id>
-                        <goals>
-                            <goal>antlr4</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>src/main/java</outputDirectory>
-                            <visitor>true</visitor>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>com.googlecode.maven-download-plugin</groupId>
                 <artifactId>download-maven-plugin</artifactId>
                 <version>1.4.0</version>
@@ -47,6 +30,23 @@
                             <url>https://raw.githubusercontent.com/antlr/grammars-v4/master/protobuf3/Protobuf3.g4</url>
                             <outputFileName>Protobuf3.g4</outputFileName>
                             <outputDirectory>src/main/antlr4/com/khubla/antlr4example/</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <version>4.7.2</version>
+                <executions>
+                    <execution>
+                        <id>antlr</id>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>src/main/java</outputDirectory>
+                            <visitor>true</visitor>
                         </configuration>
                     </execution>
                 </executions>
